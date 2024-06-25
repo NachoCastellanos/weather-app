@@ -32,7 +32,7 @@ public class MunicipioController {
         return "Hello, World!";
     }
 
-    @GetMapping("/prediccion/{codigoMunicipio}")
+    @GetMapping("/prediccion/provincia/manana/{codigoMunicipio}")
     public Prediccion getPrediccion(@PathVariable String codigoMunicipio) {
         return aemetService.getPrediccion(codigoMunicipio, "G_CEL");
     }

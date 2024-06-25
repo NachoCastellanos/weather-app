@@ -12,7 +12,6 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.nio.charset.Charset;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -56,7 +55,7 @@ public class AemetService {
 
     public Prediccion getPrediccion(String codigoMunicipio, String unidadTemperatura) {
         if (unidadTemperatura == null) {
-            unidadTemperatura = "G_CEL";
+            unidadTemperatura = "G_CEL" ;
         }
 
         String url = BASE_URL + "/prediccion/provincia/manana/" + codigoMunicipio + "?api_key=" + API_KEY;
