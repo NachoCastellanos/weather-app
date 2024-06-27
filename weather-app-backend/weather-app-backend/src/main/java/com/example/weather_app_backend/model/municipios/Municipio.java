@@ -1,4 +1,4 @@
-package com.example.weather_app_backend.model;
+package com.example.weather_app_backend.model.municipios;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

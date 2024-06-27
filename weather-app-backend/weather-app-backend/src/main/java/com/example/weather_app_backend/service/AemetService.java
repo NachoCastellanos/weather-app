@@ -1,7 +1,7 @@
 package com.example.weather_app_backend.service;
 
-import com.example.weather_app_backend.model.Municipio;
-import com.example.weather_app_backend.model.Prediccion;
+import com.example.weather_app_backend.model.clima.PrediccionHoraria;
+import com.example.weather_app_backend.model.municipios.Municipio;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -44,7 +44,8 @@ public class AemetService {
             String datos = datosResponse.getBody();
 
             ObjectMapper mapper = new ObjectMapper();
-            List<Municipio> municipios = mapper.readValue(datos, new TypeReference<List<Municipio>>(){});
+            List<Municipio> municipios = mapper.readValue(datos, new TypeReference<List<Municipio>>() {
+            });
 
             return municipios;
         } catch (HttpClientErrorException | JsonProcessingException e) {
@@ -53,40 +54,33 @@ public class AemetService {
         }
     }
 
-    public Prediccion getPrediccion(String codigoMunicipio, String unidadTemperatura) {
-        if (unidadTemperatura == null) {
-            unidadTemperatura = "G_CEL" ;
-        }
-
-        String url = BASE_URL + "/prediccion/provincia/manana/" + codigoMunicipio + "?api_key=" + API_KEY;
+    public PrediccionHoraria getPrediccionHoraria(String idMunicipio) {
+        String url = BASE_URL + "/prediccion/especifica/municipio/horaria/" + idMunicipio + "?api_key=" + API_KEY;
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             headers.set("api_key", API_KEY);
             HttpEntity<String> entity = new HttpEntity<>(headers);
 
+            System.out.println("URL final: " + url);
+
             ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class);
             String datosUrl = (String) response.getBody().get("datos");
+
+            System.out.println("URL de datos: " + datosUrl); // Línea añadida
 
             ResponseEntity<String> datosResponse = restTemplate.getForEntity(datosUrl, String.class);
             String datos = datosResponse.getBody();
 
             ObjectMapper mapper = new ObjectMapper();
-            Prediccion prediccion = mapper.readValue(datos, Prediccion.class);
+            PrediccionHoraria prediccionHoraria = mapper.readValue(datos, PrediccionHoraria.class);
 
-            if ("G_FAH".equals(unidadTemperatura)) {
-                prediccion.setTemperaturaMedia(convertCelsiusToFahrenheit(prediccion.getTemperaturaMedia()));
-            }
-            prediccion.setUnidadMedidaTemperatura(unidadTemperatura);
+            System.out.println("Objeto PrediccionHoraria: " + prediccionHoraria);
 
-            return prediccion;
+            return prediccionHoraria;
         } catch (HttpClientErrorException | JsonProcessingException e) {
             // manejar la excepción
             return null;
         }
-    }
-
-    private double convertCelsiusToFahrenheit(double celsius) {
-        return celsius * 9/5 + 32;
     }
 }
