@@ -1,15 +1,13 @@
-package com.example.weather_app_backend.model.clima;
+package com.example.weather_app_backend.model.input;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class Medicion {
+public class PrediccionDetalle {
     @JsonProperty("value")
     private String value;
 
     @JsonProperty("periodo")
-    private String periodo;
-
-    // getters and setters
+    private String fecha;
 
     public String getValue() {
         return value;
@@ -19,11 +17,11 @@ public class Medicion {
         this.value = value;
     }
 
-    public String getPeriodo() {
-        return periodo;
+    public String getFecha() {
+        return fecha;
     }
 
-    public void setPeriodo(String periodo) {
-        this.periodo = periodo;
+    public void setFecha(String fecha) {
+        this.fecha = fecha;
     }
 }

@@ -1,7 +1,7 @@
 package com.example.weather_app_backend.controller;
 
-import com.example.weather_app_backend.model.clima.PrediccionHoraria;
 import com.example.weather_app_backend.model.municipios.Municipio;
+import com.example.weather_app_backend.model.output.PrediccionResponse;
 import com.example.weather_app_backend.service.AemetService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,8 +33,8 @@ public class MunicipioController {
     }
 
     @GetMapping("/prediccion/{idMunicipio}")
-    public PrediccionHoraria getPrediccionHoraria(@PathVariable String idMunicipio) {
-        return aemetService.getPrediccionHoraria(idMunicipio);
+    public PrediccionResponse getPrediccionMunicipio(@PathVariable String idMunicipio) {
+        return aemetService.getPrediccionMunicipio(idMunicipio);
     }
 }
 
