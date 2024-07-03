@@ -1,5 +1,6 @@
 package com.example.weather_app_backend.controller;
 
+import com.example.weather_app_backend.model.input.PrediccionMunicipio;
 import com.example.weather_app_backend.model.municipios.Municipio;
 import com.example.weather_app_backend.model.output.PrediccionResponse;
 import com.example.weather_app_backend.service.AemetService;
@@ -33,7 +34,7 @@ public class MunicipioController {
     }
 
     @GetMapping("/prediccion/{idMunicipio}")
-    public PrediccionResponse getPrediccionMunicipio(@PathVariable String idMunicipio) {
+    public PrediccionMunicipio getPrediccionMunicipio(@PathVariable String idMunicipio) {
         return aemetService.getPrediccionMunicipio(idMunicipio);
     }
 }

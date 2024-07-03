@@ -9,8 +9,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.http.converter.StringHttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -19,76 +21,71 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Arrays;
 
 @Service
 public class AemetService {
 
-    private final String API_KEY = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuYWNobzJjYXNtb3JAZ21haWwuY29tIiwianRpIjoiMmNiZmMxMmItOTRmMS00YzI5LWI5MzYtYTQwYzhhMTVkZjExIiwiaXNzIjoiQUVNRVQiLCJpYXQiOjE3MTkzMDIxMzEsInVzZXJJZCI6IjJjYmZjMTJiLTk0ZjEtNGMyOS1iOTM2LWE0MGM4YTE1ZGYxMSIsInJvbGUiOiIifQ.MbGWQgW3DRdofVq5n7YG5KaF6rEiLl0dsw9WwZGc-F8";
     private final String BASE_URL = "https://opendata.aemet.es/opendata/api";
-
     private RestTemplate restTemplate;
+    private HttpHeaders headers;
 
-    public AemetService() {
+    public AemetService(@Value("${aemet.token}") String token) {
+        // Crear una instancia de RestTemplate para realizar solicitudes HTTP
         this.restTemplate = new RestTemplate();
-        this.restTemplate.getMessageConverters()
-                .add(0, new StringHttpMessageConverter(Charset.forName("ISO-8859-15")));
+
+        // Configurar el RestTemplate para soportar tanto texto plano como JSON en las respuestas
+        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+        converter.setSupportedMediaTypes(Arrays.asList(MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON));
+        restTemplate.getMessageConverters().add(0, converter);
+
+        // Inicializar HttpHeaders y configurar el tipo de contenido a JSON
+        // y añadir el token de la API como cabecera de autorización
+        headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("api_key", token);
     }
 
     public List<Municipio> getAllMunicipios() {
-        String url = BASE_URL + "/maestro/municipios?api_key=" + API_KEY;
+        String url = BASE_URL + "/maestro/municipios";
         try {
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.set("api_key", API_KEY);
             HttpEntity<String> entity = new HttpEntity<>(headers);
 
+            // Paso 1: Obtener la URL de los datos
             ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class);
             String datosUrl = (String) response.getBody().get("datos");
 
-            ResponseEntity<String> datosResponse = restTemplate.getForEntity(datosUrl, String.class);
-            String datos = datosResponse.getBody();
+            // Paso 2: Realizar solicitud a la URL de los datos
+            ResponseEntity<Municipio[]> datosResponse = restTemplate.exchange(datosUrl, HttpMethod.GET, entity, Municipio[].class);
+            Municipio[] municipiosArray = datosResponse.getBody();
 
-            ObjectMapper mapper = new ObjectMapper();
-            List<Municipio> municipios = mapper.readValue(datos, new TypeReference<List<Municipio>>() {
-            });
+            // Convertir el arreglo a lista para mantener la consistencia con el tipo de retorno
+            return Arrays.asList(municipiosArray);
 
-            return municipios;
-        } catch (HttpClientErrorException | JsonProcessingException e) {
+        } catch (Exception e) {
             // manejar la excepción
             return null;
         }
     }
 
-    public PrediccionResponse getPrediccionMunicipio(String idMunicipio) {
-        String url = BASE_URL + "/prediccion/especifica/municipio/horaria/" + idMunicipio + "?api_key=" + API_KEY;
+    public PrediccionMunicipio getPrediccionMunicipio(String idMunicipio) {
+        String url = BASE_URL + "/prediccion/especifica/municipio/horaria/" + idMunicipio;
         try {
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.set("api_key", API_KEY);
             HttpEntity<String> entity = new HttpEntity<>(headers);
 
-            System.out.println("URL final: " + url);
-
+            // Paso 1: Obtener la URL de los datos
             ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class);
             String datosUrl = (String) response.getBody().get("datos");
+            System.out.println("URL de datos: " + datosUrl);
 
-            System.out.println("URL de datos: " + datosUrl); // Línea añadida
+            // Paso 2: Realizar solicitud a la URL de los datos
+            ResponseEntity<PrediccionMunicipio> datosResponse = restTemplate.exchange(datosUrl, HttpMethod.GET, entity, PrediccionMunicipio.class);
+            PrediccionMunicipio prediccionMunicipio = datosResponse.getBody();
 
-            ResponseEntity<String> datosResponse = restTemplate.getForEntity(datosUrl, String.class);
-            String datos = datosResponse.getBody();
+            // Respuesta
+            return prediccionMunicipio;
 
-            System.out.println("Datos JSON: " + datos);
-
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            PrediccionMunicipio prediccionMunicipio = mapper.readValue(datos, PrediccionMunicipio.class);
-
-            System.out.println("Objeto PrediccionHoraria: " + prediccionMunicipio);
-
-            return transformarAPrediccionResponse(prediccionMunicipio);
-
-
-        } catch (HttpClientErrorException | JsonProcessingException e) {
+        } catch (Exception e) {
             // manejar la excepción
             return null;
         }

@@ -20,6 +20,12 @@ public class PrediccionMunicipio {
     @JsonProperty("prediccion")
     private PrediccionDias prediccionDias;
 
+    @JsonProperty("id")
+    private String id;
+
+    @JsonProperty("version")
+    private String version;
+
     //getters and setters
 
     public Map<String, Object> getOrigen() {
@@ -60,5 +66,25 @@ public class PrediccionMunicipio {
 
     public void getPrediccionDias(PrediccionDias prediccionDias) {
         this.prediccionDias = prediccionDias;
+    }
+
+    public void setPrediccionDias(PrediccionDias prediccionDias) {
+        this.prediccionDias = prediccionDias;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
     }
 }
