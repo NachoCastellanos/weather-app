@@ -1,27 +1,16 @@
 package com.example.weather_app_backend.service;
 
-import com.example.weather_app_backend.model.input.PrediccionDetalle;
-import com.example.weather_app_backend.model.input.PrediccionMunicipio;
+import com.example.weather_app_backend.model.predicciones.PrediccionInput;
 import com.example.weather_app_backend.model.municipios.Municipio;
-import com.example.weather_app_backend.model.output.PrediccionResponse;
-import com.example.weather_app_backend.model.output.ProbPrecipitacion;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
-import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import java.nio.charset.Charset;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Arrays;
 
 @Service
 public class AemetService {
@@ -68,7 +57,7 @@ public class AemetService {
         }
     }
 
-    public PrediccionMunicipio getPrediccionMunicipio(String idMunicipio) {
+    public PrediccionInput getPrediccionMunicipio(String idMunicipio) {
         String url = BASE_URL + "/prediccion/especifica/municipio/horaria/" + idMunicipio;
         try {
             HttpEntity<String> entity = new HttpEntity<>(headers);
@@ -79,11 +68,11 @@ public class AemetService {
             System.out.println("URL de datos: " + datosUrl);
 
             // Paso 2: Realizar solicitud a la URL de los datos
-            ResponseEntity<PrediccionMunicipio> datosResponse = restTemplate.exchange(datosUrl, HttpMethod.GET, entity, PrediccionMunicipio.class);
-            PrediccionMunicipio prediccionMunicipio = datosResponse.getBody();
+            ResponseEntity<PrediccionInput> datosResponse = restTemplate.exchange(datosUrl, HttpMethod.GET, entity, PrediccionInput.class);
+            PrediccionInput prediccionInput = datosResponse.getBody();
 
             // Respuesta
-            return prediccionMunicipio;
+            return prediccionInput;
 
         } catch (Exception e) {
             // manejar la excepción
@@ -91,7 +80,7 @@ public class AemetService {
         }
     }
 
-    private PrediccionResponse transformarAPrediccionResponse(PrediccionMunicipio prediccionMunicipio) {
+    /*private PrediccionResponse transformarAPrediccionResponse(PrediccionMunicipio prediccionMunicipio) {
         PrediccionResponse prediccionResponse = new PrediccionResponse();
 
         // Calcula la media de las temperaturas y la establece en el objeto de respuesta
@@ -129,5 +118,5 @@ public class AemetService {
         }
 
         return probPrecipitaciones;
-    }
+    } */
 }
