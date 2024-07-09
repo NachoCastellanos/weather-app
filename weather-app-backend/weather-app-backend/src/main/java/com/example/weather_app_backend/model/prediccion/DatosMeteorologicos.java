@@ -1,4 +1,4 @@
-package com.example.weather_app_backend.model.predicciones;
+package com.example.weather_app_backend.model.prediccion;
 
 public interface DatosMeteorologicos {
     String getValue();

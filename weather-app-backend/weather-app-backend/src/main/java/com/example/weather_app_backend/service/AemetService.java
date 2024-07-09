@@ -1,9 +1,10 @@
 package com.example.weather_app_backend.service;
 
-import com.example.weather_app_backend.model.predicciones.PrediccionInput;
 import com.example.weather_app_backend.model.municipios.Municipio;
+import com.example.weather_app_backend.model.prediccion.input.PrediccionInput;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -21,7 +22,9 @@ public class AemetService {
     public AemetService(@Value("${aemet.token}") String token) {
         // Crear una instancia de RestTemplate para realizar solicitudes HTTP
         this.restTemplate = new RestTemplate();
-
+        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+        converter.setSupportedMediaTypes(Arrays.asList(MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON));
+        restTemplate.getMessageConverters().add(0, converter);
         // Inicializar HttpHeaders y configurar el tipo de contenido a JSON
         // y añadir el token de la API como cabecera de autorización
         headers = new HttpHeaders();
@@ -51,7 +54,7 @@ public class AemetService {
         }
     }
 
-     public PrediccionInput getPrediccionMunicipio(String idMunicipio) {
+    public PrediccionInput[] getPrediccionMunicipio(String idMunicipio) {
         String url = BASE_URL + "/prediccion/especifica/municipio/horaria/" + idMunicipio;
         try {
             HttpEntity<String> entity = new HttpEntity<>(headers);
@@ -62,8 +65,8 @@ public class AemetService {
             System.out.println("URL de datos: " + datosUrl);
 
             // Paso 2: Realizar solicitud a la URL de los datos
-            ResponseEntity<PrediccionInput> datosResponse = restTemplate.exchange(datosUrl, HttpMethod.GET, entity, PrediccionInput.class);
-            PrediccionInput prediccionInput = datosResponse.getBody();
+            ResponseEntity<PrediccionInput[]> datosResponse = restTemplate.exchange(datosUrl, HttpMethod.GET, entity, PrediccionInput[].class);
+            PrediccionInput[] prediccionInput = datosResponse.getBody();
 
             // Respuesta
             return prediccionInput;
