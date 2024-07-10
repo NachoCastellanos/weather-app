@@ -59,31 +59,6 @@ public class AemetService {
         }
     }
 
-    /*
-    public PrediccionInput[] getPrediccionMunicipio(String idMunicipio) {
-        String url = BASE_URL + "/prediccion/especifica/municipio/horaria/" + idMunicipio;
-        try {
-            HttpEntity<String> entity = new HttpEntity<>(headers);
-
-            // Paso 1: Obtener la URL de los datos
-            ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class);
-            String datosUrl = (String) response.getBody().get("datos");
-            System.out.println("URL de datos: " + datosUrl);
-
-            // Paso 2: Realizar solicitud a la URL de los datos
-            ResponseEntity<PrediccionInput[]> datosResponse = restTemplate.exchange(datosUrl, HttpMethod.GET, entity, PrediccionInput[].class);
-            PrediccionInput[] prediccionInput = datosResponse.getBody();
-
-            // Respuesta
-            return prediccionInput;
-
-        } catch (Exception e) {
-            // manejar la excepción
-            return null;
-        }
-    }
-    */
-
     public List<PrediccionOutput> getPrediccionMunicipio(String idMunicipio) {
         String url = BASE_URL + "/prediccion/especifica/municipio/horaria/" + idMunicipio;
         List<PrediccionOutput> prediccionOutput = new ArrayList<>();
