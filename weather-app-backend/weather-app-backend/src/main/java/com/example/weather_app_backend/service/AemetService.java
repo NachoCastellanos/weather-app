@@ -1,7 +1,10 @@
 package com.example.weather_app_backend.service;
 
 import com.example.weather_app_backend.model.municipios.Municipio;
+import com.example.weather_app_backend.model.prediccion.input.Dia;
+import com.example.weather_app_backend.model.prediccion.input.PrediccionDetalle;
 import com.example.weather_app_backend.model.prediccion.input.PrediccionInput;
+import com.example.weather_app_backend.model.prediccion.output.PrediccionOutput;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -54,8 +57,10 @@ public class AemetService {
         }
     }
 
-    public PrediccionInput[] getPrediccionMunicipio(String idMunicipio) {
+    public PrediccionOutput getPrediccionMunicipio(String idMunicipio) {
         String url = BASE_URL + "/prediccion/especifica/municipio/horaria/" + idMunicipio;
+        PrediccionOutput prediccionOutput = null;
+
         try {
             HttpEntity<String> entity = new HttpEntity<>(headers);
 
@@ -68,9 +73,23 @@ public class AemetService {
             ResponseEntity<PrediccionInput[]> datosResponse = restTemplate.exchange(datosUrl, HttpMethod.GET, entity, PrediccionInput[].class);
             PrediccionInput[] prediccionInput = datosResponse.getBody();
 
-            // Respuesta
-            return prediccionInput;
+            // Paso 3: Procesar los datos y extraer la información relevante
+            if (prediccionInput[0].getPrediccion() != null && !prediccionInput[0].getPrediccion().getDia().isEmpty()) {
+                // Asumiendo que queremos el primer objeto Dia
+                Dia diaSeleccionado = prediccionInput[0].getPrediccion().getDia().get(1);
+                List<PrediccionDetalle> temperatura = diaSeleccionado.getTemperatura();
+                List<PrediccionDetalle> probPrecipitacion = diaSeleccionado.getProbPrecipitacion();
 
+                // Calcular la media de temperatura
+                double mediaTemperatura = temperatura.stream()
+                        .mapToInt(detalle -> Integer.parseInt(detalle.getValue()))
+                        .average()
+                        .orElse(Double.NaN);
+
+                prediccionOutput = new PrediccionOutput(mediaTemperatura, probPrecipitacion);
+            }
+            // Paso 4: Retornar la información procesada
+            return prediccionOutput;
         } catch (Exception e) {
             // manejar la excepción
             return null;
