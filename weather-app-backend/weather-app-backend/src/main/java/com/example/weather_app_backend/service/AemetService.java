@@ -59,7 +59,40 @@ public class AemetService {
         }
     }
 
-    public List<PrediccionOutput> getPrediccionMunicipio(String idMunicipio) {
+    public DiaResumido getPrediccionMunicipio(String idMunicipio) {
+        String url = BASE_URL + "/prediccion/especifica/municipio/horaria/" + idMunicipio;
+        DiaResumido diaResumido = null;
+
+        try {
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+
+            // Paso 1: Obtener la URL de los datos
+            ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class);
+            String datosUrl = (String) response.getBody().get("datos");
+            System.out.println("URL de datos: " + datosUrl);
+
+            // Paso 2: Realizar solicitud a la URL de los datos
+            ResponseEntity<PrediccionInput[]> datosResponse = restTemplate.exchange(datosUrl, HttpMethod.GET, entity, PrediccionInput[].class);
+            PrediccionInput[] prediccionInput = datosResponse.getBody();
+
+            // Paso 3: Procesar los datos y extraer la información relevante
+            if (prediccionInput[0].getPrediccion() != null && !prediccionInput[0].getPrediccion().getDia().isEmpty()) {
+                // Asumiendo que queremos el primer objeto Dia
+                Dia diaSeleccionado = prediccionInput[0].getPrediccion().getDia().get(1);
+                List<PrediccionDetalle> temperatura = diaSeleccionado.getTemperatura();
+                List<PrediccionDetalle> probPrecipitacion = diaSeleccionado.getProbPrecipitacion();
+                diaResumido = new DiaResumido(temperatura, probPrecipitacion);
+            }
+            // Paso 4: Retornar la información procesada
+            return diaResumido;
+        } catch (Exception e) {
+            // manejar la excepción
+            return null;
+        }
+    }
+
+    /*
+        public List<PrediccionOutput> getPrediccionMunicipio(String idMunicipio) {
         String url = BASE_URL + "/prediccion/especifica/municipio/horaria/" + idMunicipio;
         List<PrediccionOutput> prediccionOutput = new ArrayList<>();
 
@@ -93,6 +126,7 @@ public class AemetService {
             return null;
         }
     }
+    */
 
 
 }
