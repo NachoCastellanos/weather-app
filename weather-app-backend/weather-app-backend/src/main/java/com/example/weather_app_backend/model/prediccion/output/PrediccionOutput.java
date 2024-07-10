@@ -1,42 +1,32 @@
 package com.example.weather_app_backend.model.prediccion.output;
 
-import com.example.weather_app_backend.model.prediccion.input.Dia;
+import com.example.weather_app_backend.model.prediccion.input.PrediccionDetalle;
+
+import java.util.List;
 
 public class PrediccionOutput {
+    private double mediaTemperatura;
+    private List<PrediccionDetalle> probPrecipitacion;
 
-    private String id;
-    private String nombre;
-    private DiaResumido diaResumido;
-
-    // Constructor
-    public PrediccionOutput(String id, String nombre, DiaResumido diaResumido) {
-        this.id = id;
-        this.nombre = nombre;
-        this.diaResumido = diaResumido;
+    public PrediccionOutput(double mediaTemperatura, List<PrediccionDetalle> probPrecipitacion) {
+        this.mediaTemperatura = mediaTemperatura;
+        this.probPrecipitacion = probPrecipitacion;
     }
 
-    // Getters and setters
-    public String getId() {
-        return id;
+    // Getters y setters
+    public double getMediaTemperatura() {
+        return mediaTemperatura;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setMediaTemperatura(double mediaTemperatura) {
+        this.mediaTemperatura = mediaTemperatura;
     }
 
-    public String getNombre() {
-        return nombre;
+    public List<PrediccionDetalle> getProbPrecipitacion() {
+        return probPrecipitacion;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public DiaResumido getDiaResumido() {
-        return diaResumido;
-    }
-
-    public void setDiaResumido(Dia dia) {
-        this.diaResumido = diaResumido;
+    public void setProbPrecipitacion(List<PrediccionDetalle> probPrecipitacion) {
+        this.probPrecipitacion = probPrecipitacion;
     }
 }

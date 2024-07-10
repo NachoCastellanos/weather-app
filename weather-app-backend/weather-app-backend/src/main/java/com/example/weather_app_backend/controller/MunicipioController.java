@@ -1,8 +1,6 @@
 package com.example.weather_app_backend.controller;
 
 import com.example.weather_app_backend.model.municipios.Municipio;
-import com.example.weather_app_backend.model.prediccion.input.PrediccionInput;
-import com.example.weather_app_backend.model.prediccion.output.DiaResumido;
 import com.example.weather_app_backend.model.prediccion.output.PrediccionOutput;
 import com.example.weather_app_backend.service.AemetService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,26 +33,11 @@ public class MunicipioController {
                 .collect(Collectors.toList());
     }
 
-    /*
     @GetMapping("/prediccion/{idMunicipio}")
-    public PrediccionInput[] getPrediccion(@PathVariable String idMunicipio) {
-        return aemetService.getPrediccionMunicipio(idMunicipio);
-    }
-    */
-
-    @GetMapping("/prediccion/{idMunicipio}")
-    public DiaResumido getPrediccion(@PathVariable String idMunicipio) {
-        DiaResumido predidcionMunicipio = aemetService.getPrediccionMunicipio(idMunicipio);
+    public PrediccionOutput getPrediccion(@PathVariable String idMunicipio) {
+        PrediccionOutput predidcionMunicipio = aemetService.getPrediccionMunicipio(idMunicipio);
         return predidcionMunicipio;
     }
-
-    /*
-    @GetMapping("/prediccion/{idMunicipio}")
-    public List<PrediccionOutput> getPrediccion(@PathVariable String idMunicipio) {
-        List<PrediccionOutput> predidcionMunicipio = aemetService.getPrediccionMunicipio(idMunicipio);
-        return predidcionMunicipio;
-    }
-     */
 
 }
 
